@@ -11,19 +11,19 @@ namespace CharacterCreation.Patches
     {
         private static readonly TextObject HeroUpdatedMsg = new TextObject("{=CharacterCreation_HeroUpdatedMsg}Hero updated: ");
 
-        static void Postfix(CharacterObject __instance, BodyProperties properties, bool isFemale)
+        private static void Postfix(CharacterObject __instance, BodyProperties properties, bool isFemale)
         {
             if (!__instance.IsPlayerCharacter)
             {
                 PropertyInfo staticBodyPropertyInfoOnHero = AccessTools.Property(typeof(Hero), "StaticBodyProperties");
                 staticBodyPropertyInfoOnHero.SetValue(__instance.HeroObject, properties.StaticProperties);
+                __instance.HeroObject.Weight = properties.Weight;
+                __instance.HeroObject.Build = properties.Build;
                 __instance.HeroObject.UpdatePlayerGender(isFemale);
             }
-            if (__instance.IsHero)
-            {
-                if (DCCSettings.Instance != null && DCCSettings.Instance.DebugMode)
-                    InformationManager.DisplayMessage(new InformationMessage(HeroUpdatedMsg.ToString() + __instance.HeroObject.Name, ColorManager.Purple));
-            }
+
+            if (__instance.IsHero && DCCSettings.Instance != null && DCCSettings.Instance.DebugMode)
+                InformationManager.DisplayMessage(new InformationMessage(HeroUpdatedMsg.ToString() + __instance.HeroObject.Name, ColorManager.Purple));
         }
     }
 }
